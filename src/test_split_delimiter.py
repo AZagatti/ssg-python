@@ -28,8 +28,8 @@ class TestSplitNodesDelimiter(unittest.TestCase):
         self.assertEqual(new_nodes, expected)
 
     def test_split_italic_delimiter(self):
-        node = TextNode("This is text with an *italic phrase* here", TextType.TEXT)
-        new_nodes = split_nodes_delimiter([node], "*", TextType.ITALIC)
+        node = TextNode("This is text with an _italic phrase_ here", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "_", TextType.ITALIC)
         expected = [
             TextNode("This is text with an ", TextType.TEXT),
             TextNode("italic phrase", TextType.ITALIC),
