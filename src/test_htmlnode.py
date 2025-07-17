@@ -6,7 +6,7 @@ from htmlnode import HTMLNode
 class TestHTMLNode(unittest.TestCase):
     def test_props_to_html_single_prop(self):
         node = HTMLNode(tag="div", props={"class": "container"})
-        expected = 'class="container" '
+        expected = 'class="container"'
         self.assertEqual(node.props_to_html(), expected)
 
     def test_props_to_html_multiple_props(self):
