@@ -6,6 +6,7 @@ from extract_markdown import (
     split_nodes_image,
     split_nodes_link,
     text_to_textnodes,
+    markdown_to_blocks,
 )
 from textnode import TextNode, TextType
 
@@ -481,6 +482,139 @@ class TestTextToTextNodes(unittest.TestCase):
             TextNode("   ", TextType.TEXT),
         ]
         self.assertListEqual(expected, nodes)
+
+
+class TestMarkdownToBlocks(unittest.TestCase):
+    def test_markdown_to_blocks(self):
+        md = """
+This is **bolded** paragraph
+
+This is another paragraph with _italic_ text and `code` here
+This is the same paragraph on a new line
+
+- This is a list
+- with items
+"""
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "This is **bolded** paragraph",
+                "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                "- This is a list\n- with items",
+            ],
+        )
+
+    def test_markdown_to_blocks_single_block(self):
+        md = "This is just a single paragraph with no separating lines."
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks, ["This is just a single paragraph with no separating lines."]
+        )
+
+    def test_markdown_to_blocks_empty_string(self):
+        md = ""
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(blocks, [])
+
+    def test_markdown_to_blocks_only_whitespace(self):
+        md = "   \n\n   \n\n   "
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(blocks, [])
+
+    def test_markdown_to_blocks_with_extra_newlines(self):
+        md = """
+
+First block
+
+
+Second block
+
+
+
+Third block
+
+"""
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(blocks, ["First block", "Second block", "Third block"])
+
+    def test_markdown_to_blocks_with_leading_trailing_whitespace(self):
+        md = """
+  First block with spaces
+
+  Second block with tabs
+
+  Third block
+"""
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks, ["First block with spaces", "Second block with tabs", "Third block"]
+        )
+
+    def test_markdown_to_blocks_complex_example(self):
+        md = """# Heading 1
+
+This is a paragraph with **bold** text and _italic_ text.
+
+## Heading 2
+
+Another paragraph here.
+This continues the same paragraph.
+
+- List item 1
+- List item 2
+- List item 3
+
+Code block:
+```
+print("hello world")
+```
+
+Final paragraph."""
+        blocks = markdown_to_blocks(md)
+        expected = [
+            "# Heading 1",
+            "This is a paragraph with **bold** text and _italic_ text.",
+            "## Heading 2",
+            "Another paragraph here.\nThis continues the same paragraph.",
+            "- List item 1\n- List item 2\n- List item 3",
+            'Code block:\n```\nprint("hello world")\n```',
+            "Final paragraph.",
+        ]
+        self.assertEqual(blocks, expected)
+
+    def test_markdown_to_blocks_preserve_internal_newlines(self):
+        md = """First line
+Second line
+Third line
+
+Another block
+With multiple lines"""
+        blocks = markdown_to_blocks(md)
+        expected = [
+            "First line\nSecond line\nThird line",
+            "Another block\nWith multiple lines",
+        ]
+        self.assertEqual(blocks, expected)
+
+    def test_markdown_to_blocks_mixed_content(self):
+        md = """# Title
+
+Paragraph with [link](https://example.com) and ![image](https://example.com/img.png).
+
+> This is a quote block
+> with multiple lines
+
+1. Numbered list
+2. Second item"""
+        blocks = markdown_to_blocks(md)
+        expected = [
+            "# Title",
+            "Paragraph with [link](https://example.com) and ![image](https://example.com/img.png).",
+            "> This is a quote block\n> with multiple lines",
+            "1. Numbered list\n2. Second item",
+        ]
+        self.assertEqual(blocks, expected)
 
 
 if __name__ == "__main__":
