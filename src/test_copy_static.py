@@ -32,36 +32,23 @@ def test_copy_function_manually():
         with open(os.path.join(source_dir, "images", "nested", "test.png"), "w") as f:
             f.write("fake image data")
 
-        # Test the copy function
-        print("Testing copy function with nested structure...")
         copy_files_recursive(source_dir, dest_dir)
 
-        # Verify files were copied
         assert os.path.exists(os.path.join(dest_dir, "index.html"))
         assert os.path.exists(os.path.join(dest_dir, "css", "style.css"))
         assert os.path.exists(os.path.join(dest_dir, "js", "script.js"))
         assert os.path.exists(os.path.join(dest_dir, "images", "nested", "test.png"))
 
-        print("✅ All files copied successfully!")
-
-        # Test that it handles existing directory
-        print("Testing with existing directory...")
         with open(os.path.join(dest_dir, "should_remain.txt"), "w") as f:
             f.write("This should remain")
 
         copy_files_recursive(source_dir, dest_dir)
 
-        # Verify old file remains and new structure exists
         assert os.path.exists(os.path.join(dest_dir, "should_remain.txt"))
         assert os.path.exists(os.path.join(dest_dir, "index.html"))
 
-        print("✅ Existing directory handling works correctly!")
-
     finally:
-        # Clean up temp directory
         shutil.rmtree(temp_dir)
-
-    print("🎉 All manual tests passed!")
 
 
 if __name__ == "__main__":
