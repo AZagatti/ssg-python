@@ -2,7 +2,7 @@ import os
 import shutil
 
 from copystatic import copy_files_recursive
-from generate_page import generate_page
+from generate_page import generate_pages_recursive
 
 
 def main():
@@ -23,11 +23,9 @@ def main():
     print("Copying static files to public directory...")
     copy_files_recursive(dir_path_static, dir_path_public)
 
-    # Generate the main page
-    index_markdown_path = os.path.join(dir_path_content, "index.md")
-    index_html_path = os.path.join(dir_path_public, "index.html")
-
-    generate_page(index_markdown_path, template_path, index_html_path)
+    # Generate all pages recursively from content directory
+    print("Generating pages from content directory...")
+    generate_pages_recursive(dir_path_content, template_path, dir_path_public)
 
 
 if __name__ == "__main__":
