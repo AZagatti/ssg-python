@@ -1,92 +1,65 @@
-# Estrutura Refatorada do Gerador de Site Estático (SSG)
+# Project Architecture
 
-## 📁 Organização dos Módulos
+## Module Organization
 
-A refatoração seguiu as melhores práticas, separando responsabilidades em módulos especializados:
+The static site generator follows a modular design with clear separation of responsibilities:
 
-### 🔧 Módulos Principais
+## Core Modules
 
-#### `textnode.py`
-- **Propósito**: Classes base para representação de texto
-- **Conteúdo**: `TextNode`, `TextType`, `text_node_to_html_node()`
-- **Responsabilidade**: Estruturas fundamentais de texto e conversão para HTML
+### `textnode.py`
+- **Purpose**: Base text representation classes
+- **Content**: `TextNode`, `TextType`, `text_node_to_html_node()`
+- **Responsibility**: Fundamental text structures and HTML conversion
 
-#### `htmlnode.py`, `leafnode.py`, `parentnode.py`
-- **Propósito**: Hierarquia de nós HTML
-- **Responsabilidade**: Representação e geração de estruturas HTML
+### `htmlnode.py`, `leafnode.py`, `parentnode.py`
+- **Purpose**: HTML node hierarchy
+- **Responsibility**: HTML structure representation and generation
 
-#### `split_delimiter.py`
-- **Propósito**: Processamento de delimitadores markdown
-- **Responsabilidade**: Dividir texto baseado em delimitadores (**bold**, _italic_, `code`)
+### `split_delimiter.py`
+- **Purpose**: Markdown delimiter processing
+- **Responsibility**: Split text based on delimiters (**bold**, _italic_, `code`)
 
-#### `inline_markdown.py` ✨ **(Novo)**
-- **Propósito**: Processamento de markdown inline
-- **Funções principais**:
+### `inline_markdown.py`
+- **Purpose**: Inline markdown processing
+- **Key functions**:
   - `extract_markdown_images()` / `extract_markdown_links()`
   - `split_nodes_image()` / `split_nodes_link()`
-  - `text_to_textnodes()` - função principal de conversão
+  - `text_to_textnodes()` - main conversion function
 
-#### `block_markdown.py` ✨ **(Novo)**
-- **Propósito**: Processamento de blocos markdown
-- **Funções principais**:
-  - `markdown_to_blocks()` - separar documento em blocos
-  - `block_to_block_type()` - identificar tipo de cada bloco
-  - `markdown_to_html_node()` - conversão principal
-  - Funções especializadas: `heading_to_html_node()`, `code_to_html_node()`, etc.
+### `block_markdown.py`
+- **Purpose**: Block-level markdown processing
+- **Key functions**:
+  - `markdown_to_blocks()` - separate document into blocks
+  - `block_to_block_type()` - identify block types
+  - `markdown_to_html_node()` - main conversion
+  - Specialized functions: `heading_to_html_node()`, `code_to_html_node()`, etc.
 
-#### `markdown.py` ✨ **(Novo)**
-- **Propósito**: Módulo principal que re-exporta todas as funções
-- **Responsabilidade**: Interface unificada para usar o sistema completo
+### `extract_title.py`
+- **Purpose**: Extract H1 headers from markdown
+- **Responsibility**: Title extraction for page metadata
 
-### 🧪 Módulos de Teste
+### `generate_page.py`
+- **Purpose**: Page generation from markdown to HTML
+- **Responsibility**: Template processing and file generation
 
-#### `test_inline_markdown.py` ✨ **(Novo)**
-- Testes para funções de processamento inline
+### `copystatic.py`
+- **Purpose**: Static file copying
+- **Responsibility**: Recursive file and directory copying
 
-#### `test_markdown_to_html.py` ✨ **(Novo)**
-- Testes para conversão completa markdown → HTML
+### `main.py`
+- **Purpose**: Main entry point
+- **Responsibility**: Orchestrate the build process
 
-#### `test_extract_markdown.py` **(Atualizado)**
-- Testes legados atualizados para usar os novos módulos
+## Test Modules
 
-## 🚀 Vantagens da Refatoração
+### `test_*.py`
+- Comprehensive test coverage for all functionality
+- 176 tests covering text processing, HTML generation, and file operations
+- Ensures reliability and correctness of all components
 
-### ✅ **Separação de Responsabilidades**
-- **Inline**: Tudo relacionado a formatação dentro de linhas
-- **Block**: Tudo relacionado a estrutura de blocos
-- **Core**: Estruturas fundamentais (TextNode, HTMLNode)
+## Design Principles
 
-### ✅ **Manutenibilidade**
-- Código mais fácil de entender e modificar
-- Testes mais focados e específicos
-- Redução de dependências circulares
-
-### ✅ **Reutilização**
-- Módulos podem ser usados independentemente
-- Interface limpa e bem definida
-- Facilita extensões futuras
-
-### ✅ **Compatibilidade**
-- Arquivo `markdown.py` mantém interface familiar
-- Testes existentes continuam funcionando
-- Migração gradual possível
-
-## 📊 Estatísticas
-
-- **162 testes passando** ✅
-- **5 módulos especializados** criados
-- **100% compatibilidade** mantida
-- **Código mais limpo** e organizuado
-
-## 🎯 Uso Recomendado
-
-```python
-# Para uso simples, importe do módulo principal
-from markdown import markdown_to_html_node, text_to_textnodes
-
-# Para funcionalidades específicas, importe dos módulos especializados
-from inline_markdown import extract_markdown_links
-from block_markdown import BlockType, block_to_block_type
-```
-
-Esta estrutura torna o código mais profissional, escalável e fácil de manter! 🎉
+1. **Single Responsibility**: Each module has a clear, focused purpose
+2. **Modular Design**: Components can be tested and modified independently
+3. **Clear Interfaces**: Simple function signatures and clear data flow
+4. **Comprehensive Testing**: High test coverage ensures reliability
