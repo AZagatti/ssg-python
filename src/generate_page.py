@@ -3,7 +3,7 @@ from block_markdown import markdown_to_html_node
 from extract_title import extract_title
 
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath="/"):
     """
     Generate an HTML page from markdown content using a template.
 
@@ -11,6 +11,7 @@ def generate_page(from_path, template_path, dest_path):
         from_path (str): Path to the markdown file
         template_path (str): Path to the HTML template file
         dest_path (str): Path where the generated HTML file will be saved
+        basepath (str): Base path for the site (default: "/")
     """
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
 
@@ -32,6 +33,10 @@ def generate_page(from_path, template_path, dest_path):
     # Replace placeholders in template
     final_html = template_content.replace("{{ Title }}", title)
     final_html = final_html.replace("{{ Content }}", html_content)
+    
+    # Replace absolute paths with basepath
+    final_html = final_html.replace('href="/', f'href="{basepath}')
+    final_html = final_html.replace('src="/', f'src="{basepath}')
 
     # Ensure destination directory exists
     dest_dir = os.path.dirname(dest_path)
@@ -43,7 +48,7 @@ def generate_page(from_path, template_path, dest_path):
         f.write(final_html)
 
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath="/"):
     """
     Recursively generate HTML pages for all markdown files in a directory.
 
@@ -51,6 +56,7 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
         dir_path_content (str): Path to the content directory containing markdown files
         template_path (str): Path to the HTML template file
         dest_dir_path (str): Path to the destination directory for generated HTML files
+        basepath (str): Base path for the site (default: "/")
     """
     # List all entries in the content directory
     for entry in os.listdir(dir_path_content):
@@ -59,10 +65,10 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
         if os.path.isfile(entry_path):
             # If it's a markdown file, generate an HTML page
             if entry.endswith(".md"):
-                # Convert .md to .html for destination filename
+            # Convert .md to .html for destination filename
                 html_filename = entry.replace(".md", ".html")
                 dest_path = os.path.join(dest_dir_path, html_filename)
-                generate_page(entry_path, template_path, dest_path)
+                generate_page(entry_path, template_path, dest_path, basepath)
         else:
             # If it's a directory, create corresponding directory in destination
             # and recursively process it
@@ -71,4 +77,4 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
                 os.makedirs(dest_subdir)
 
             # Recursively process the subdirectory
-            generate_pages_recursive(entry_path, template_path, dest_subdir)
+            generate_pages_recursive(entry_path, template_path, dest_subdir, basepath)
